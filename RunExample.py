@@ -13,7 +13,7 @@ if __name__ == "__main__":
     pmf.user_neighbor_matrix = Userneighbor_indices
     pmf.item_simility_matrix = item_simility
     pmf.item_neighbor_matrix = Itemneighbor_indices
-    pmf.set_params({"num_feat": 10, "epsilon": 1, "_lambda": 0.01, "momentum": 0.8, "maxepoch": 100, "num_batches": 10, "batch_size": 1000})
+    pmf.set_params({"num_feat": 10, "epsilon": 1, "_lambda": 0.001, "momentum": 0.8, "maxepoch": 100, "num_batches": 10, "batch_size": 1000})
     ratings = load_Douban_data(file_path)
     # ratings = load_rating_data()
     print(len(np.unique(ratings[:, 0])), len(np.unique(ratings[:, 1])), pmf.num_feat)

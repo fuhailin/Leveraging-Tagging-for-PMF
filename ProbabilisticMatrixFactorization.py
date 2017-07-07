@@ -72,15 +72,14 @@ class PMF(object):
                 juzhen = 0
                 for i in batch_UserID:
                     for j in self.user_neighbor_matrix[i - 1]:
-                        juzhen += self.w_User[i, :] * self.user_simility_matrix[i - 1][j]
-                Ix_User = 2 * np.multiply(rawErr[:, np.newaxis], self.w_Item[batch_ItemID, :]) \
-                       + self._lambda * self.w_User[batch_UserID, :]
+                        juzhen += self.w_User[j+1, :] * self.user_simility_matrix[i - 1][j]
+                Ix_User = 2 * np.multiply(rawErr[:, np.newaxis], self.w_Item[batch_ItemID, :]) + self._lambda * (self.w_User[batch_UserID, :]-juzhen)
                 juzhen1 = 0
                 for i in batch_ItemID:
                     for j in self.item_neighbor_matrix[i - 1]:
-                        juzhen1 += self.w_Item[i, :] * self.item_simility_matrix[i - 1][j]
-                Ix_Item = 2 * np.multiply(rawErr[:, np.newaxis], self.w_User[batch_UserID, :]) \
-                       + self._lambda * (self.w_Item[batch_ItemID, :])  # np.newaxis :increase the dimension
+                        # for k in self.item_neighbor_matrix[j-1]:
+                        juzhen1 += self.w_Item[j+1, :] * self.item_simility_matrix[i - 1][j]
+                Ix_Item = 2 * np.multiply(rawErr[:, np.newaxis], self.w_User[batch_UserID, :]) + self._lambda * (self.w_Item[batch_ItemID, :]-juzhen1)  # np.newaxis :increase the dimension
 
                 dw_Item = np.zeros((num_item, self.num_feat))
                 dw_User = np.zeros((num_user, self.num_feat))
