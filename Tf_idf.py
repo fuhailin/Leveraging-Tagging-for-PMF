@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # Remove those tags which are annotated by less than five distinct users and five distinct items
 # @author: Kris
-import numpy as np
-import pickle
-import pandas as pd
 import math
-from sklearn.neighbors import NearestNeighbors
+
+import numpy as np
+import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.neighbors import NearestNeighbors
 
 
 def TF(dataDict):
     tagTF = {}
-    for each,taglist in dataDict.items():
+    for each, taglist in dataDict.items():
         # user = line[1]
         # taglist = list(map(int, line[2].split(',')))
         if each not in tagTF:
@@ -26,7 +26,7 @@ def TF(dataDict):
 
 def IDF(dataDict):
     tagIDF = {}
-    for each,taglist in dataDict.items():
+    for each, taglist in dataDict.items():
         # testtags = list(map(int, line[2].split(',')))
         tagset = set(taglist)
         for e in tagset:
@@ -37,7 +37,7 @@ def IDF(dataDict):
     return tagIDF
 
 
-if __name__ == '__main__':
+def TFIDF():
     header = ['after_id', 'before_id']
     tagdataframe = pd.read_csv('Data/tags.txt', header=None, delimiter='|', encoding='UTF-8', names=header)
     num_tag = tagdataframe.shape[0]
@@ -101,6 +101,5 @@ if __name__ == '__main__':
     Itemneighbor_indices = knn.kneighbors(n_neighbors=10, return_distance=False)
     # Itemneighbor_indices.dump('Data/ItemneighborMatrix.dat')
     item_similarity = cosine_similarity(item_tag_tfidf)
-    # item_similarity.dump('Data/item_similarity.dat')
-
-
+    # item_similarity.dump('Data/item_similarity.dat'
+    return user_similarity, Userneighbor_indices, item_similarity, Itemneighbor_indices

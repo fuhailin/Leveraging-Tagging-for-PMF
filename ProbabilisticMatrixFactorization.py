@@ -13,7 +13,7 @@ class PMF(object):
         self.batch_size = batch_size  # Number of training samples used in each batches (for SGD optimization)
         self.user_simility_matrix = None
         self.item_simility_matrix = None
-        self.user_neighbor_matrix=None
+        self.user_neighbor_matrix = None
         self.item_neighbor_matrix = None
         self.w_Item = None  # Item feature vectors
         self.w_User = None  # User feature vectors
@@ -69,22 +69,26 @@ class PMF(object):
                 rawErr = pred_out - train_vec[shuffled_order[batch_idx], 2] + self.mean_inv
 
                 # Compute gradients
-                juzhen=None
+                juzhen = 0
                 for i in batch_UserID:
-                    for j in self.neighboe_matrix[i]:
-                        juzhen+=self.w_User[i,:]*self.simility_matrix[j]
-                Ix_I = 2 * np.multiply(rawErr[:, np.newaxis], self.w_Item[batch_ItemID, :]) \
-                       + self._lambda * (self.w_User[batch_UserID, :]-juzhen)
-                Ix_C = 2 * np.multiply(rawErr[:, np.newaxis], self.w_User[batch_UserID, :]) \
-                       + self._lambda * (self.w_Item[batch_ItemID, :] - self.neighboe_matrix[batch_ItemID])  # np.newaxis :increase the dimension
+                    for j in self.user_neighbor_matrix[i - 1]:
+                        juzhen += self.w_User[i, :] * self.user_simility_matrix[i - 1][j]
+                Ix_User = 2 * np.multiply(rawErr[:, np.newaxis], self.w_Item[batch_ItemID, :]) \
+                       + self._lambda * self.w_User[batch_UserID, :]
+                juzhen1 = 0
+                for i in batch_ItemID:
+                    for j in self.item_neighbor_matrix[i - 1]:
+                        juzhen1 += self.w_Item[i, :] * self.item_simility_matrix[i - 1][j]
+                Ix_Item = 2 * np.multiply(rawErr[:, np.newaxis], self.w_User[batch_UserID, :]) \
+                       + self._lambda * (self.w_Item[batch_ItemID, :])  # np.newaxis :increase the dimension
 
                 dw_Item = np.zeros((num_item, self.num_feat))
                 dw_User = np.zeros((num_user, self.num_feat))
 
                 # loop to aggreate the gradients of the same element
                 for i in range(self.batch_size):
-                    dw_Item[batch_ItemID[i], :] += Ix_C[i, :]
-                    dw_User[batch_UserID[i], :] += Ix_I[i, :]
+                    dw_Item[batch_ItemID[i], :] += Ix_Item[i, :]
+                    dw_User[batch_UserID[i], :] += Ix_User[i, :]
 
                 # Update with momentum
                 self.w_Item_inc = self.momentum * self.w_Item_inc + self.epsilon * dw_Item / self.batch_size
